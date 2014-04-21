@@ -1,4 +1,3 @@
-# Return webpage info
 Return a webpage's title and favicon.
 
 ## Installing the library

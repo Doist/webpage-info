@@ -11,6 +11,7 @@ exports.parse = (url, callback, timeout) ->
             callback({'error': error})
         else
             title = body.match(RE_TITLE)
+
             if title
                 title = title[1]
             else
