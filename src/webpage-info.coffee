@@ -4,9 +4,12 @@ RE_TITLE = /<title>(.+?)<\/title>/i
 
 exports.parse = (url, callback, timeout) ->
     timeout = timeout or 5000
+
     args = {"url": url, "timeout": timeout}
 
     request(args, (error, response, body) ->
+        body = body.toString("utf8")
+
         if error or response.statusCode != 200
             callback({'error': error})
         else
