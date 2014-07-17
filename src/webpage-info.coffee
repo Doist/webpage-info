@@ -7,7 +7,7 @@ exports.parse = (url, callback, timeout) ->
     args = {"url": url, "timeout": timeout}
 
     request(args, (error, response, body) ->
-        if error
+        if error or response.statusCode != 200
             callback({'error': error})
         else
             title = body.match(RE_TITLE)
