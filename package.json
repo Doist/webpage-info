@@ -3,10 +3,10 @@
     "description":  "Return a webpage's title and favicon.",
     "keywords":     ["oembed", "preview"],
     "author":       "amix",
-    "version":      "0.0.5",
+    "version":      "0.0.6",
     "dependencies": {
         "request": ">=2.34.0",
-        "jconv": ">=0.1.5"
+        "iconv": ">=2.1.4"
     },
     "repository": "https://github.com/Doist/webpage-info",
     "licenses": [{

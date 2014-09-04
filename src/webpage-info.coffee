@@ -1,7 +1,20 @@
 request = require("request")
-jconv = require("jconv")
+Iconv = require('iconv').Iconv
 
 RE_TITLE = /<title>(.+?)<\/title>/i
+RE_CHARSET = /charset=(.+)/i
+
+convertToUtf8 = (response, str) ->
+    # Handle Japanese encoding
+    cnt_type = response.headers['content-type']
+    if cnt_type
+        charset = cnt_type.match(RE_CHARSET)
+        if charset
+            charset = charset[1].toUpperCase()
+            iconv = new Iconv(charset, 'UTF-8//TRANSLIT//IGNORE')
+            str = iconv.convert(str)
+    str = str.toString("UTF-8")
+    return str
 
 exports.parse = (url, callback, timeout) ->
     timeout = timeout or 5000
@@ -13,19 +26,10 @@ exports.parse = (url, callback, timeout) ->
         if error or response.statusCode != 200
             callback({'error': error})
         else
-            title = body.toString("UTF-8").match(RE_TITLE)
+            title = convertToUtf8(response, body).match(RE_TITLE)
 
             if title
                 title = title[1]
-
-                # Handle Japanese encoding
-                cnt_type = response.headers['content-type']
-                if cnt_type
-                    if cnt_type.toLowerCase().indexOf('euc-jp') != -1
-                        try
-                            title = jconv.convert(title.toString("binary"), 'EUCJP', 'UTF-8').toString()
-                        catch e
-                            title = url
             else
                 title = url
 
