@@ -1,20 +1,34 @@
 request = require("request")
-Iconv = require('iconv').Iconv
+jconv = require('jconv')
+ogs = require('open-graph-scraper')
 
 RE_TITLE = /<title>(.+?)<\/title>/i
-RE_CHARSET = /charset=(.+)/i
+RE_CHARSET = /charset=([^<>"']+)/i
+
 
 convertToUtf8 = (response, str) ->
     # Handle Japanese encoding
+    charset = null
+
+    charset = null
+
+    # Content type
     cnt_type = response.headers['content-type']
     if cnt_type
         charset = cnt_type.match(RE_CHARSET)
-        if charset
-            charset = charset[1].toUpperCase()
-            iconv = new Iconv(charset, 'UTF-8//TRANSLIT//IGNORE')
-            str = iconv.convert(str)
+
+    if str and charset == null
+        charset = str.toString("UTF8").match(RE_CHARSET)
+
+    if str and charset
+        charset = charset[1].toUpperCase()
+        try
+            str = jconv.convert(str, charset, "UTF8")
+        catch
+
     str = str.toString("UTF-8")
     return str
+
 
 exports.parse = (url, callback, timeout) ->
     timeout = timeout or 5000
@@ -26,15 +40,29 @@ exports.parse = (url, callback, timeout) ->
         if error or response.statusCode != 200
             callback({'error': error})
         else
-            title = convertToUtf8(response, body).match(RE_TITLE)
+            body = convertToUtf8(response, body)
+
+            title = body.match(RE_TITLE)
 
             if title
                 title = title[1]
             else
                 title = url
 
-            callback({
-                'title': title,
-                'favicon': 'https://www.google.com/s2/favicons?domain=' + url
-            })
+            ogs({"url": url, "timeout": timeout}, (err, results) =>
+                return_data = {
+                    'title': title,
+                    'favicon': 'https://www.google.com/s2/favicons?domain=' + url
+                }
+
+                if results.success
+                    data = results.data
+                    if data
+                        if data.ogImage
+                            return_data.thumbnail = data.ogImage
+                        if data.ogDescription
+                            return_data.description = data.ogDescription
+
+                callback(return_data)
+            )
     )

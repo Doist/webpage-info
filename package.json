@@ -3,16 +3,14 @@
     "description":  "Return a webpage's title and favicon.",
     "keywords":     ["oembed", "preview"],
     "author":       "amix",
-    "version":      "0.0.6",
+    "version":      "0.1.0",
     "dependencies": {
         "request": ">=2.34.0",
-        "iconv": ">=2.1.4"
+        "jconv": ">=0.1.5",
+        "open-graph-scraper": ">=1.0.1"
     },
     "repository": "https://github.com/Doist/webpage-info",
-    "licenses": [{
-        "type":       "MIT",
-        "url":        "http://opensource.org/licenses/mit-license.php"
-    }],
+	"license": "MIT",
 
     "engines": {
         "node":       ">=0.2.0"
@@ -22,6 +20,10 @@
         "lib" :       "./lib"
     },
 
-    "main" :        "./lib/webpage-info.js"
+    "main" :        "./lib/webpage-info.js",
+
+    "scripts": {
+        "build": "sh compile.sh"
+    }
 
 }
