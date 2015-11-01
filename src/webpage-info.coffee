@@ -1,5 +1,6 @@
 request = require("request")
 jconv = require('jconv')
+iconv = require('iconv-lite')
 ogs = require('open-graph-scraper')
 
 RE_TITLE = /<title>(.+?)<\/title>/i
@@ -22,9 +23,16 @@ convertToUtf8 = (response, str) ->
 
     if str and charset
         charset = charset[1].toUpperCase()
-        try
-            str = jconv.convert(str, charset, "UTF8")
-        catch
+
+        # win1251
+        if charset.indexOf('1251') != -1
+            try
+                str = iconv.decode(str, 'win1251')
+            catch
+        else
+            try
+                str = jconv.convert(str, charset, "UTF8")
+            catch
 
     str = str.toString("UTF-8")
     return str
