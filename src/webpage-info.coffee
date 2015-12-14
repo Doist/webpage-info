@@ -51,7 +51,6 @@ exports.parse = (url, callback, timeout) ->
             body = convertToUtf8(response, body)
 
             title = body.match(RE_TITLE)
-
             if title
                 title = title[1]
             else
@@ -59,15 +58,18 @@ exports.parse = (url, callback, timeout) ->
 
             ogs({"url": url, "timeout": timeout}, (err, results) =>
                 return_data = {
-                    'title': title,
-                    'favicon': 'https://www.google.com/s2/favicons?domain=' + url
+                    'title': title
                 }
 
                 if results.success
                     data = results.data
                     if data
-                        if data.ogImage
-                            return_data.thumbnail = data.ogImage
+                        if data.ogTitle
+                            return_data.title = data.ogTitle
+
+                        if data.ogImage and data.ogImage.url
+                            return_data.thumbnail = data.ogImage.url
+
                         if data.ogDescription
                             return_data.description = data.ogDescription
 
